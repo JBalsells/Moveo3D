@@ -1,0 +1,711 @@
+# define M1_ENgnd  46 //ENA-(ENA)
+# define M1_EN_5v  47 //ENA+(+5V)
+# define M1_DIRgnd 48 //DIR-(DIR)
+# define M1_DIR_5v 49 //DIR+(+5v)
+# define M1_STPgnd 50 //PUL-(PUL)
+# define M1_STP_5v 51 //PUL+(+5v)
+
+# define M2_ENgnd  22 //ENA-(ENA)
+# define M2_EN_5v  23 //ENA+(+5V)
+# define M2_DIRgnd 24 //DIR-(DIR)
+# define M2_DIR_5v 25 //DIR+(+5v)
+# define M2_STPgnd 26 //PUL-(PUL)
+# define M2_STP_5v 27 //PUL+(+5v)
+
+# define M3_ENgnd  40 //ENA-(ENA)
+# define M3_EN_5v  41 //ENA+(+5V)
+# define M3_DIRgnd 42 //DIR-(DIR)
+# define M3_DIR_5v 43 //DIR+(+5v)
+# define M3_STPgnd 44 //PUL-(PUL)
+# define M3_STP_5v 45 //PUL+(+5v)
+
+# define M4_ENgnd  2 //ENA-(ENA)
+# define M4_EN_5v  3 //ENA+(+5V)
+# define M4_DIRgnd 4 //DIR-(DIR)
+# define M4_DIR_5v 5 //DIR+(+5v)
+# define M4_STPgnd 6 //PUL-(PUL)
+# define M4_STP_5v 7 //PUL+(+5v)
+
+# define M5_ENgnd  34 //ENA-(ENA)
+# define M5_EN_5v  35 //ENA+(+5V)
+# define M5_DIRgnd 36 //DIR-(DIR)
+# define M5_DIR_5v 37 //DIR+(+5v)
+# define M5_STPgnd 38 //PUL-(PUL)
+# define M5_STP_5v 39 //PUL+(+5v)
+
+# define M6_ENgnd  28 //ENA-(ENA)
+# define M6_EN_5v  29 //ENA+(+5V)
+# define M6_DIRgnd 30 //DIR-(DIR)
+# define M6_DIR_5v 31 //DIR+(+5v)
+# define M6_STPgnd 32 //PUL-(PUL)
+# define M6_STP_5v 33 //PUL+(+5v)
+
+# define light_enable 8
+# define light_pwm 9
+
+// constantes de angulos maximos de grados de libertad
+const int f_angle_limit_GDL1 = 90;
+const int f_angle_limit_GDL2 = 90;
+const int f_angle_limit_GDL3 = 90;
+const int f_angle_limit_GDL4 = 90;
+const int f_angle_limit_GDL5 = 90;
+
+// constantes de angulos minimos de grados de libertad
+const int b_angle_limit_GDL1 = -90;
+const int b_angle_limit_GDL2 = -90;
+const int b_angle_limit_GDL3 = -90;
+const int b_angle_limit_GDL4 = -90;
+const int b_angle_limit_GDL5 = -90;
+
+//constantes de pulsos maximos de grados de libertad
+const long f_pulse_limit_GDL1 = 0;
+const long f_pulse_limit_GDL2 = 4500;
+const long f_pulse_limit_GDL3 = 70000;
+const long f_pulse_limit_GDL4 = 800;
+const long f_pulse_limit_GDL5 = 3500;
+
+//constantes de pulsos minimos de grados de libertad
+const long b_pulse_limit_GDL1 = 0;
+const long b_pulse_limit_GDL2 = -4500;
+const long b_pulse_limit_GDL3 = -70000;
+const long b_pulse_limit_GDL4 = -800;
+const long b_pulse_limit_GDL5 = -3500;
+
+//Variables de prueba para variar velocidad
+//float time_proportion_GDL3 = 0.002;
+//long pos_relation_GDL3 = 0;
+
+//Variables de angulos ingresados para mover grados de libertad
+float angle_pos_GDL1 = 0;
+float angle_pos_GDL2 = 0;
+float angle_pos_GDL3 = 0;
+float angle_pos_GDL4 = 0;
+float angle_pos_GDL5 = 0;
+
+long new_pos_GDL1 = 0;
+long new_pos_GDL2 = 0;
+long new_pos_GDL3 = 0;
+long new_pos_GDL4 = 0;
+long new_pos_GDL5 = 0;
+
+long old_pos_GDL1 = 0;
+long old_pos_GDL2 = 0;
+long old_pos_GDL3 = 0;
+long old_pos_GDL4 = 0;
+long old_pos_GDL5 = 0;
+
+long prev_micros_GDL1 = 0;
+long prev_micros_GDL2 = 0;
+long prev_micros_GDL3 = 0;
+long prev_micros_GDL4 = 0;
+long prev_micros_GDL5 = 0;
+
+long interval_GDL1 = 300;
+long interval_GDL2 = 1000;
+long interval_GDL3 = 50;
+long interval_GDL4 = 2500;
+long interval_GDL5 = 1000;
+
+int state_GDL1 = LOW;
+int state_GDL2 = LOW;
+int state_GDL3 = LOW;
+int state_GDL4 = LOW;
+int state_GDL5 = LOW;
+
+int light_value = 0;
+String mySt = "";
+char myChar;
+boolean stringComplete = false;
+boolean mov_start = false;
+
+void setup() {
+  pinMode (M1_ENgnd ,OUTPUT);
+  pinMode (M1_EN_5v ,OUTPUT);
+  pinMode (M1_DIRgnd,OUTPUT);
+  pinMode (M1_DIR_5v,OUTPUT);
+  pinMode (M1_STPgnd,OUTPUT);
+  pinMode (M1_STP_5v,OUTPUT);
+    
+  pinMode (M2_ENgnd ,OUTPUT);
+  pinMode (M2_EN_5v ,OUTPUT);
+  pinMode (M2_DIRgnd,OUTPUT);
+  pinMode (M2_DIR_5v,OUTPUT);
+  pinMode (M2_STPgnd,OUTPUT);
+  pinMode (M2_STP_5v,OUTPUT);
+  
+  pinMode (M3_ENgnd ,OUTPUT);
+  pinMode (M3_EN_5v ,OUTPUT);
+  pinMode (M3_DIRgnd,OUTPUT);
+  pinMode (M3_DIR_5v,OUTPUT);
+  pinMode (M3_STPgnd,OUTPUT);
+  pinMode (M3_STP_5v,OUTPUT);
+    
+  pinMode (M4_ENgnd ,OUTPUT);
+  pinMode (M4_EN_5v ,OUTPUT);
+  pinMode (M4_DIRgnd,OUTPUT);
+  pinMode (M4_DIR_5v,OUTPUT);
+  pinMode (M4_STPgnd,OUTPUT);
+  pinMode (M4_STP_5v,OUTPUT);
+  
+  pinMode (M5_ENgnd ,OUTPUT);
+  pinMode (M5_EN_5v ,OUTPUT);
+  pinMode (M5_DIRgnd,OUTPUT);
+  pinMode (M5_DIR_5v,OUTPUT);
+  pinMode (M5_STPgnd,OUTPUT);
+  pinMode (M5_STP_5v,OUTPUT);
+  
+  pinMode (M6_ENgnd ,OUTPUT);
+  pinMode (M6_EN_5v ,OUTPUT);
+  pinMode (M6_DIRgnd,OUTPUT);
+  pinMode (M6_DIR_5v,OUTPUT);
+  pinMode (M6_STPgnd,OUTPUT);
+  pinMode (M6_STP_5v,OUTPUT);
+
+  pinMode(light_enable,OUTPUT);
+  pinMode(light_pwm,OUTPUT);
+
+  
+  digitalWrite (M1_ENgnd,  LOW);
+  digitalWrite (M1_EN_5v, HIGH);
+  digitalWrite (M1_DIRgnd, LOW);
+  digitalWrite (M1_DIR_5v, LOW);
+  digitalWrite (M1_STPgnd, LOW);
+  digitalWrite (M1_STP_5v, LOW);
+  
+  digitalWrite (M2_ENgnd,  LOW);
+  digitalWrite (M2_EN_5v, HIGH);
+  digitalWrite (M2_DIRgnd, LOW);
+  digitalWrite (M2_DIR_5v, LOW);
+  digitalWrite (M2_STPgnd, LOW);
+  digitalWrite (M2_STP_5v, LOW);
+  
+  digitalWrite (M3_ENgnd,  LOW);
+  digitalWrite (M3_EN_5v, HIGH);
+  digitalWrite (M3_DIRgnd, LOW);
+  digitalWrite (M3_DIR_5v, LOW);
+  digitalWrite (M3_STPgnd, LOW);
+  digitalWrite (M3_STP_5v, LOW);
+  
+  digitalWrite (M4_ENgnd,  LOW);
+  digitalWrite (M4_EN_5v, HIGH);
+  digitalWrite (M4_DIRgnd, LOW);
+  digitalWrite (M4_DIR_5v, LOW);
+  digitalWrite (M4_STPgnd, LOW);
+  digitalWrite (M4_STP_5v, LOW);
+  
+  digitalWrite (M5_ENgnd,  LOW);
+  digitalWrite (M5_EN_5v, HIGH);
+  digitalWrite (M5_DIRgnd, LOW);
+  digitalWrite (M5_DIR_5v, LOW);
+  digitalWrite (M5_STPgnd, LOW);
+  digitalWrite (M5_STP_5v, LOW);
+  
+  digitalWrite (M6_ENgnd,  LOW);
+  digitalWrite (M6_EN_5v, HIGH);
+  digitalWrite (M6_DIRgnd, LOW);
+  digitalWrite (M6_DIR_5v, LOW);
+  digitalWrite (M6_STPgnd, LOW);
+  digitalWrite (M6_STP_5v, LOW);
+  
+  Serial.begin(115200);
+
+  digitalWrite (M1_EN_5v, LOW);
+  digitalWrite (M2_EN_5v, LOW);
+  digitalWrite (M3_EN_5v, LOW);
+  digitalWrite (M4_EN_5v, LOW);
+  digitalWrite (M5_EN_5v, LOW);
+  digitalWrite (M6_EN_5v, LOW); 
+
+  digitalWrite(light_enable, LOW);
+  analogWrite(light_pwm, light_value);
+}
+
+int Dir_GDL5(int dir=0){
+  if(dir==0){
+    digitalWrite (M2_DIR_5v,HIGH);
+  }
+  else if(dir==1){
+    digitalWrite (M2_DIR_5v,LOW);  
+  }
+}
+
+int Dir_GDL4(int dir=0){
+  if(dir==0){
+    digitalWrite (M3_DIR_5v,HIGH);
+  }
+  else if(dir==1){
+    digitalWrite (M3_DIR_5v,LOW);  
+  }
+}
+
+int Dir_GDL3(int dir=0){
+  if(dir==0){
+    digitalWrite (M1_DIR_5v,LOW);
+  }
+  else if(dir==1){
+    digitalWrite (M1_DIR_5v,HIGH);  
+  }
+}
+
+int Dir_GDL2(int dir=0){
+  if(dir==0){
+    digitalWrite (M5_DIR_5v,HIGH);
+    digitalWrite (M6_DIR_5v,LOW);
+  }
+  else if(dir==1){
+    digitalWrite (M5_DIR_5v,LOW);
+    digitalWrite (M6_DIR_5v,HIGH);    
+  }
+}
+
+int Dir_GDL1(int dir=0){
+  if(dir==0){
+    digitalWrite (M4_DIR_5v,HIGH);
+  }
+  else if(dir==1){
+    digitalWrite (M4_DIR_5v,LOW);  
+  }
+}
+
+int Step_GDL5(){
+  if(state_GDL5==LOW){
+    state_GDL5=HIGH;
+    digitalWrite (M2_STP_5v, state_GDL5);
+  }
+  else{
+    state_GDL5=LOW;
+    digitalWrite (M2_STP_5v, state_GDL5);
+  }
+}
+
+int Step_GDL4(){
+  if(state_GDL4==LOW){
+    state_GDL4=HIGH;
+    digitalWrite (M3_STP_5v, state_GDL4);
+  }
+  else{
+    state_GDL4=LOW;
+    digitalWrite (M3_STP_5v, state_GDL4);
+  }  
+}
+
+int Step_GDL3(){
+  if(state_GDL3==LOW){
+    state_GDL3=HIGH;
+    digitalWrite (M1_STP_5v, state_GDL3);
+  }
+  else{
+    state_GDL3=LOW;
+    digitalWrite (M1_STP_5v, state_GDL3);
+  }
+}
+
+int Step_GDL2(){
+  if(state_GDL2==LOW){
+    state_GDL2=HIGH;
+    digitalWrite (M5_STP_5v, state_GDL2);
+    digitalWrite (M6_STP_5v, state_GDL2);
+  }
+  else{
+    state_GDL2=LOW;
+    digitalWrite (M5_STP_5v, state_GDL2);
+    digitalWrite (M6_STP_5v, state_GDL2);
+  }
+}
+
+int Step_GDL1(){
+  if(state_GDL1==LOW){
+    state_GDL1=HIGH;
+    digitalWrite (M4_STP_5v, state_GDL1);
+  }
+  else{
+    state_GDL1=LOW;
+    digitalWrite (M4_STP_5v, state_GDL1);
+  }
+}
+
+void loop(){
+  unsigned long current_micros = micros();
+
+  if (stringComplete==true && mov_start==false) {
+      if(mySt.substring(0,5)=="DOF1:"){
+        //new_pos_GDL1 = mySt.substring(5,mySt.length()).toInt();
+        
+        angle_pos_GDL1 = mySt.substring(5,mySt.length()).toFloat();
+  
+        if(angle_pos_GDL1>=0){
+          new_pos_GDL1 = (long)(angle_pos_GDL1*f_pulse_limit_GDL1/f_angle_limit_GDL1);
+        }
+        else{
+          new_pos_GDL1 = (long)(angle_pos_GDL1*b_pulse_limit_GDL1/b_angle_limit_GDL1);
+        }
+        
+        if(new_pos_GDL1>f_pulse_limit_GDL1){
+          new_pos_GDL1 = f_pulse_limit_GDL1;
+        }
+        if(new_pos_GDL1<b_pulse_limit_GDL1){
+          new_pos_GDL1 = b_pulse_limit_GDL1;
+        }
+  
+        if(new_pos_GDL1 > old_pos_GDL1){ 
+          Dir_GDL1(0);
+        }
+        else if(new_pos_GDL1 < old_pos_GDL1){ 
+          Dir_GDL1(1);
+        } 
+  
+        Serial.print("DOF1 MOVE FROM ");
+        Serial.print(old_pos_GDL1);
+        Serial.print(" TO ");
+        Serial.println(new_pos_GDL1);
+      }
+      
+      if(mySt.substring(0,5)=="DOF2:"){
+        angle_pos_GDL2 = mySt.substring(5,mySt.length()).toFloat();
+  
+        if(angle_pos_GDL2>=0){
+          new_pos_GDL2 = (long)(angle_pos_GDL2*f_pulse_limit_GDL2/f_angle_limit_GDL2);
+        }
+        else{
+          new_pos_GDL2 = (long)(angle_pos_GDL2*b_pulse_limit_GDL2/b_angle_limit_GDL2);
+        }
+        
+        if(new_pos_GDL2>f_pulse_limit_GDL2){
+          new_pos_GDL2 = f_pulse_limit_GDL2;
+        }
+        if(new_pos_GDL2<b_pulse_limit_GDL2){
+          new_pos_GDL2 = b_pulse_limit_GDL2;
+        }
+  
+        if(new_pos_GDL2 > old_pos_GDL2){ 
+          Dir_GDL2(0);
+        }
+        else if(new_pos_GDL2 < old_pos_GDL2){ 
+          Dir_GDL2(1);
+        } 
+  
+        Serial.print("DOF2 MOVE FROM ");
+        Serial.print(old_pos_GDL2);
+        Serial.print(" TO ");
+        Serial.println(new_pos_GDL2);
+      }
+  
+      if(mySt.substring(0,5)=="DOF3:"){
+        angle_pos_GDL3 = mySt.substring(5,mySt.length()).toFloat();
+  
+        if(angle_pos_GDL3>=0){
+          new_pos_GDL3 = (long)(angle_pos_GDL3*f_pulse_limit_GDL3/f_angle_limit_GDL3);
+        }
+        else{
+          new_pos_GDL3 = (long)(angle_pos_GDL3*b_pulse_limit_GDL3/b_angle_limit_GDL3);
+        }
+        
+        if(new_pos_GDL3>f_pulse_limit_GDL3){
+          new_pos_GDL3 = f_pulse_limit_GDL3;
+        }
+        if(new_pos_GDL3<b_pulse_limit_GDL3){
+          new_pos_GDL3 = b_pulse_limit_GDL3;
+        }
+  
+        if(new_pos_GDL3 > old_pos_GDL3){ 
+          Dir_GDL3(0);
+        }
+        else if(new_pos_GDL3 < old_pos_GDL3){ 
+          Dir_GDL3(1);
+        } 
+  
+        Serial.print("DOF3 MOVE FROM ");
+        Serial.print(old_pos_GDL3);
+        Serial.print(" TO ");
+        Serial.println(new_pos_GDL3);
+      }
+  
+      if(mySt.substring(0,5)=="DOF4:"){
+        angle_pos_GDL4 = mySt.substring(5,mySt.length()).toFloat();
+  
+        if(angle_pos_GDL4>=0){
+          new_pos_GDL4 = (long)(angle_pos_GDL4*f_pulse_limit_GDL4/f_angle_limit_GDL4);
+        }
+        else{
+          new_pos_GDL4 = (long)(angle_pos_GDL4*b_pulse_limit_GDL4/b_angle_limit_GDL4);
+        }
+        
+        if(new_pos_GDL4>f_pulse_limit_GDL4){
+          new_pos_GDL4 = f_pulse_limit_GDL4;
+        }
+        if(new_pos_GDL4<b_pulse_limit_GDL4){
+          new_pos_GDL4 = b_pulse_limit_GDL4;
+        }
+  
+        if(new_pos_GDL4 > old_pos_GDL4){ 
+          Dir_GDL4(0);
+        }
+        else if(new_pos_GDL4 < old_pos_GDL4){ 
+          Dir_GDL4(1);
+        } 
+  
+        Serial.print("DOF1 MOVE FROM ");
+        Serial.print(old_pos_GDL4);
+        Serial.print(" TO ");
+        Serial.println(new_pos_GDL4);
+      }
+  
+      if(mySt.substring(0,5)=="DOF5:"){
+        angle_pos_GDL5 = mySt.substring(5,mySt.length()).toFloat();
+  
+        if(angle_pos_GDL5>=0){
+          new_pos_GDL5 = (long)(angle_pos_GDL5*f_pulse_limit_GDL5/f_angle_limit_GDL5);
+        }
+        else{
+          new_pos_GDL5 = (long)(angle_pos_GDL5*b_pulse_limit_GDL5/b_angle_limit_GDL5);
+        }
+        
+        if(new_pos_GDL5>f_pulse_limit_GDL5){
+          new_pos_GDL5 = f_pulse_limit_GDL5;
+        }
+        if(new_pos_GDL5<b_pulse_limit_GDL5){
+          new_pos_GDL5 = b_pulse_limit_GDL5;
+        }
+  
+        if(new_pos_GDL5 > old_pos_GDL5){ 
+          Dir_GDL5(0);
+        }
+        else if(new_pos_GDL5 < old_pos_GDL5){ 
+          Dir_GDL5(1);
+        } 
+  
+        Serial.print("DOF1 MOVE FROM ");
+        Serial.print(old_pos_GDL5);
+        Serial.print(" TO ");
+        Serial.println(new_pos_GDL5);
+      }                 
+  
+      if(mySt.substring(0,4)=="HOME"){      
+        new_pos_GDL1 = 0;
+        new_pos_GDL2 = 0;
+        new_pos_GDL3 = 0;
+        new_pos_GDL4 = 0;
+        new_pos_GDL5 = 0;
+
+        if(new_pos_GDL1 > old_pos_GDL1){ 
+          Dir_GDL1(0);
+        }
+        else if(new_pos_GDL1 < old_pos_GDL1){ 
+          Dir_GDL1(1);
+        } 
+
+        if(new_pos_GDL2 > old_pos_GDL2){ 
+          Dir_GDL2(0);
+        }
+        else if(new_pos_GDL2 < old_pos_GDL2){ 
+          Dir_GDL2(1);
+        } 
+
+        if(new_pos_GDL3 > old_pos_GDL3){ 
+          Dir_GDL3(0);
+        }
+        else if(new_pos_GDL3 < old_pos_GDL3){ 
+          Dir_GDL3(1);
+        } 
+
+        if(new_pos_GDL4 > old_pos_GDL4){ 
+          Dir_GDL4(0);
+        }
+        else if(new_pos_GDL4 < old_pos_GDL4){ 
+          Dir_GDL4(1);
+        } 
+
+        if(new_pos_GDL5 > old_pos_GDL5){ 
+          Dir_GDL5(0);
+        }
+        else if(new_pos_GDL5 < old_pos_GDL5){ 
+          Dir_GDL5(1);
+        } 
+  
+        Serial.println("SET POSITIONS TO 0");
+      }
+  
+      if(mySt.substring(0,5)=="START"){
+        mov_start = true;
+  
+        Serial.println("Moving...");
+      }
+  
+      if(mySt.substring(0,4)=="STOP"){
+        mov_start = false;
+
+        new_pos_GDL1 = old_pos_GDL1;
+        new_pos_GDL2 = old_pos_GDL2;
+        new_pos_GDL3 = old_pos_GDL3;
+        new_pos_GDL4 = old_pos_GDL4;
+        new_pos_GDL5 = old_pos_GDL5;
+  
+        Serial.println("STOP");
+      }
+  
+      if(mySt.substring(0,8)=="LIGHT_ON"){
+        digitalWrite(light_enable, HIGH);
+  
+        Serial.println("LIGHT ON");
+      }
+  
+      if(mySt.substring(0,9)=="LIGHT_OFF"){
+        digitalWrite(light_enable, LOW);
+  
+        Serial.println("LIGHT OFF");
+      }    
+  
+      if(mySt.substring(0,10)=="LIGHT_PWM:"){
+        light_value = mySt.substring(10,mySt.length()).toInt();
+        analogWrite(light_pwm, light_value);
+  
+        Serial.print("LIGHT PWM: ");
+        Serial.println(light_value);
+      }
+      
+      mySt = "";
+      stringComplete = false;
+  }
+
+  if(mov_start==true){
+    if(old_pos_GDL1 != new_pos_GDL1){
+      if(current_micros - prev_micros_GDL1 > interval_GDL1) {
+        
+        prev_micros_GDL1 = current_micros;
+        
+        if(new_pos_GDL1 > old_pos_GDL1){ 
+          old_pos_GDL1 = old_pos_GDL1 + 1;
+        }
+        else if(new_pos_GDL1 < old_pos_GDL1){ 
+          old_pos_GDL1 = old_pos_GDL1 - 1;
+        } 
+      
+        Step_GDL2();
+      }
+    }
+    else if(old_pos_GDL2 == new_pos_GDL2){
+      old_pos_GDL2 = new_pos_GDL2;
+    }
+  
+    if(old_pos_GDL2 != new_pos_GDL2){
+      if(current_micros - prev_micros_GDL2 > interval_GDL2) {
+        
+        prev_micros_GDL2 = current_micros;
+        
+        if(new_pos_GDL2 > old_pos_GDL2){ 
+          old_pos_GDL2 = old_pos_GDL2 + 1;
+        }
+        else if(new_pos_GDL2 < old_pos_GDL2){ 
+          old_pos_GDL2 = old_pos_GDL2 - 1;
+        } 
+      
+        Step_GDL2();
+      }
+    }
+    else if(old_pos_GDL2 == new_pos_GDL2){
+      old_pos_GDL2 = new_pos_GDL2;
+    }
+  
+    /*if(old_pos_GDL3 != new_pos_GDL3){
+      if(current_micros - prev_micros_GDL3 > interval_GDL3 + (time_proportion_GDL3*pos_relation_GDL3)) {
+        
+        prev_micros_GDL3 = current_micros;
+        
+        if(new_pos_GDL3 > old_pos_GDL3){ 
+          old_pos_GDL3 = old_pos_GDL3 + 1;
+          
+          pos_relation_GDL3 = new_pos_GDL3 - old_pos_GDL3;
+        }
+        else if(new_pos_GDL3 < old_pos_GDL3){ 
+          old_pos_GDL3 = old_pos_GDL3 - 1;
+          pos_relation_GDL3 = old_pos_GDL3 - new_pos_GDL3;
+        } 
+      
+        Step_GDL3();
+      }
+    }
+    else if(old_pos_GDL3 == new_pos_GDL3){
+      old_pos_GDL3 = new_pos_GDL3;
+    }*/
+
+    
+    if(old_pos_GDL3 != new_pos_GDL3){
+      if(current_micros - prev_micros_GDL3 > interval_GDL3) {
+        
+        prev_micros_GDL3 = current_micros;
+        
+        if(new_pos_GDL3 > old_pos_GDL3){ 
+          old_pos_GDL3 = old_pos_GDL3 + 1;
+        }
+        else if(new_pos_GDL3 < old_pos_GDL3){ 
+          old_pos_GDL3 = old_pos_GDL3 - 1;
+        } 
+      
+        Step_GDL3();
+      }
+    }
+    else if(old_pos_GDL3 == new_pos_GDL3){
+      old_pos_GDL3 = new_pos_GDL3;
+    }
+  
+    if(old_pos_GDL4 != new_pos_GDL4){
+      if(current_micros - prev_micros_GDL4 > interval_GDL4) {
+        
+        prev_micros_GDL4 = current_micros;
+        
+        if(new_pos_GDL4 > old_pos_GDL4){ 
+          old_pos_GDL4 = old_pos_GDL4 + 1;
+        }
+        else if(new_pos_GDL4 < old_pos_GDL4){ 
+          old_pos_GDL4 = old_pos_GDL4 - 1;
+        } 
+      
+        Step_GDL4();
+      }
+    }
+    else if(old_pos_GDL4 == new_pos_GDL4){
+      old_pos_GDL4 = new_pos_GDL4;
+    }
+  
+    if(old_pos_GDL5 != new_pos_GDL5){
+      if(current_micros - prev_micros_GDL5 > interval_GDL5) {
+        
+        prev_micros_GDL5 = current_micros;
+        
+        if(new_pos_GDL5 > old_pos_GDL5){ 
+          old_pos_GDL5 = old_pos_GDL5 + 1;
+        }
+        else if(new_pos_GDL5 < old_pos_GDL5){ 
+          old_pos_GDL5 = old_pos_GDL5 - 1;
+        } 
+      
+        Step_GDL5();
+      }
+    }
+    else if(old_pos_GDL5 == new_pos_GDL5){
+      old_pos_GDL5 = new_pos_GDL5;
+    }
+
+    if(old_pos_GDL1 == new_pos_GDL1 && old_pos_GDL2 == new_pos_GDL2 && old_pos_GDL3 == new_pos_GDL3 && old_pos_GDL4 == new_pos_GDL4 && old_pos_GDL5 == new_pos_GDL5){
+
+      Serial.println("Wait.");
+      delay(500);
+      mov_start = false;
+      Serial.println("Done.");
+    }
+  }
+}
+
+void serialEvent() {
+  while (Serial.available()) {
+    char inChar = (char)Serial.read();
+
+    if (inChar != '\n') {
+      mySt += inChar;
+    }
+
+    if (inChar == '\n') {
+      stringComplete = true;
+    }
+  }
+}
